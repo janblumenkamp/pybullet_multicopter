@@ -4,7 +4,7 @@ import time
 import pybullet as p
 import pybullet_data
 import matplotlib.pyplot as plt
-
+import os
 import threading
 import keyboard
 
@@ -30,7 +30,8 @@ client = p.connect(p.GUI)
 p.setGravity(0, 0, -10, physicsClientId=client) 
 p.setAdditionalSearchPath(pybullet_data.getDataPath())
 plane_id = p.loadURDF("plane.urdf", physicsClientId=client)
-drone = Quadcopter(client, np.array([0,0,1]))
+p.setAdditionalSearchPath(f"{os.getcwd()}/pybullet_multicopter")
+drone = Quadcopter(client)
 
 def print_info():
     while True:
@@ -43,7 +44,7 @@ def print_info():
 from pid import PID
 
 def eval_pid_roll():
-    pif_h = PID(2, 0.01, 200)
+    pif_h = PID(2, 2.4, 0.84)
     desired_height = 3
     angle_sign = -1
     setpoints = []
@@ -62,7 +63,7 @@ def eval_pid_roll():
         current_time += 1/240
         drone.set_roll(setpoint)
         drone.set_yaw(0)
-        drone.set_thrust(pif_h.step(desired_height, drone.position[2]))
+        drone.set_thrust(pif_h.step(desired_height, drone.position[2], 1/240))
         drone.step()
 
         if drone.position[2] >= desired_height:
@@ -85,7 +86,7 @@ def eval_pid_roll():
     plt.show()
 
 def eval_pid_yaw():
-    pif_h = PID(4, 0.01, 100)
+    pif_h = PID(4, 2.4, 0.42)
     desired_height = 2
     angle_sign = 1
     setpoints = []
@@ -104,7 +105,7 @@ def eval_pid_yaw():
         current_time += 1/240
         drone.set_roll(0)
         drone.set_yaw(setpoint)
-        drone.set_thrust(pif_h.step(desired_height, drone.position[2]))
+        drone.set_thrust(pif_h.step(desired_height, drone.position[2], 1/240))
         if current_time > 0.1:
             start_logging = True
         if angle_sign == 1 and drone.orientation[2] > np.pi/16:
@@ -127,10 +128,10 @@ def eval_pid_yaw():
     plt.show()
 
 def remote_control():
-    pid_h = PID(3, 0.001, 150)
+    pid_h = PID(3, 0.24, 0.625)
     desired_height = 2
     while True:
-        drone.step_speed(0, 0, pid_h.step(desired_height, drone.position[2]))
+        drone.step_speed(0, 0, pid_h.step(desired_height, drone.position[2], 1/240))
         drone.set_pitch(current_control['pitch'])
         drone.set_roll(current_control['roll'])
         drone.set_yaw(current_control['yaw'])
@@ -191,7 +192,7 @@ def eval_pid_speed_ver():
     while True:
         setpoint = 0
         if start_logging:
-            setpoint = 4*angle_sign
+            setpoint = 2*angle_sign
         setpoints.append(setpoint)
         real_data.append(-drone.lateral_speed[2])
         timestep.append(current_time)
@@ -224,7 +225,7 @@ def eval_pid_speed_ver():
     plt.show()
 
 def eval_pid_pos_ver():
-    pif_h = PID(3, 0.001, 150)
+    pif_h = PID(3, 0.24, 0.625)
     
     setpoints = []
     out = []
@@ -250,7 +251,7 @@ def eval_pid_pos_ver():
         timestep.append(current_time)
         current_time += 1/240
         
-        o = pif_h.step(setpoint, drone.position[2])
+        o = pif_h.step(setpoint, drone.position[2], 1/240)
         out.append(-drone.lateral_speed[2])
         print(o)
         drone.step_speed(0, 0, o)
@@ -271,8 +272,7 @@ def eval_pid_pos_ver():
 
 #eval_pid_speed_ver()
 #eval_pid_speed_hor()
-remote_control()
+#remote_control()
 #eval_pid_pos_ver()
-#eval_pid_pos_hor()
 #eval_pid_yaw()
 #eval_pid_roll()
