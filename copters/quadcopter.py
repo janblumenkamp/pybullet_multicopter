@@ -1,6 +1,6 @@
 import numpy as np
 import pybullet as p
-from pid import PID
+from ..util.pid import PID
 
 DEFAULT_CONFIG = {
     'step_freq': 240,
@@ -34,7 +34,9 @@ class Quadcopter():
         self.pybullet_client = pybullet_client
         self.cfg = cfg
         self.initial_pos = self.position = np.array(self.cfg['reset_pos'])
-        self.body_id = p.loadURDF("./quadcopter.urdf", basePosition=self.initial_pos, physicsClientId=self.pybullet_client)
+        import os
+        p.setAdditionalSearchPath(os.path.dirname(os.path.abspath(__file__)))
+        self.body_id = p.loadURDF("quadcopter.urdf", basePosition=self.initial_pos, physicsClientId=self.pybullet_client)
 
         self.simulated_wind_vector = np.array(self.cfg['wind_vector'])
 

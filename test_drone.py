@@ -1,4 +1,5 @@
-from quadcopter import Quadcopter
+from .copters.quadcopter import Quadcopter
+from .util.pid import PID
 import numpy as np
 import time
 import pybullet as p
@@ -40,8 +41,6 @@ def print_info():
         time.sleep(0.05)
 
 #threading.Thread(target=print_info, args=()).start()
-
-from pid import PID
 
 def eval_pid_roll():
     pif_h = PID(2, 2.4, 0.84)
@@ -272,7 +271,7 @@ def eval_pid_pos_ver():
 
 #eval_pid_speed_ver()
 #eval_pid_speed_hor()
-#remote_control()
+remote_control()
 #eval_pid_pos_ver()
 #eval_pid_yaw()
 #eval_pid_roll()
