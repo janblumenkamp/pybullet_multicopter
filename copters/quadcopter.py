@@ -62,6 +62,14 @@ class Quadcopter():
         self.update_state()
         self.last_orientation = self.orientation
         self.last_position = self.position
+
+        self.roll_pid.reset()
+        self.pitch_pid.reset()
+        self.yaw_pid.reset()
+        self.pid_vx.reset()
+        self.pid_vy.reset()
+        self.pid_vz.reset()
+
         self.compute_speed()
 
     def update_state(self):
