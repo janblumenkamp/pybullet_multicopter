@@ -225,14 +225,16 @@ def eval_pid_yaw(client):
     while True:
         if state == 0:
             if current_time > 0.1:
-                setpoint = 2*np.pi
+                setpoint = 6*np.pi
+                state_change_time = current_time
                 state += 1
         elif state == 1:
-            if drone.orientation_euler[2] > np.pi/2:
+            if current_time - state_change_time > 1:
+                state_change_time = current_time
                 setpoint = -np.pi
                 state += 1
         elif state == 2:
-            if drone.orientation[2] < -np.pi/4:
+            if current_time - state_change_time > 1:
                 break
 
         drone.set_pitch_rate(0)
@@ -503,9 +505,9 @@ if __name__ == '__main__':
     #test_pid_roll()
     #test_pid_speed_hor(client)
     #remote_control_nonholonomic(client)
-    test_pid_speed_hor(client)
+    #test_pid_speed_hor(client)
     #eval_pid_pos_ver()
-    #eval_pid_yaw()
+    eval_pid_yaw(client)
     #eval_pid_roll()
     #eval_pid_yaw(client)
     #remote_control(client)
