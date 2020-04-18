@@ -8,13 +8,14 @@ class PID():
     def reset(self):
         self.integral = 0
         self.last_error = 0
+        self.error = 0
         
     def step(self, setpoint, feedback, dt):
-        error = setpoint - feedback
-        self.integral += error * dt
-        p = self.k['P']*error
+        self.error = setpoint - feedback
+        self.integral += self.error * dt
+        p = self.k['P']*self.error
         i = self.k['I']*self.integral
-        d = self.k['D']*((error - self.last_error)/dt)
-        self.last_error = error
+        d = self.k['D']*((self.error - self.last_error)/dt)
+        self.last_error = self.error
         return p+i+d
 
