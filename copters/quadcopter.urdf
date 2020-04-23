@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+   <!-- https://github.com/mmyself/ros_ardrone/blob/9e88b39b9c8c751b702dfa902a3dca537b2200db/ardrone_launch/launch/drone.urdf -->
    <robot name="drone">
 
      <link name="base_link">
